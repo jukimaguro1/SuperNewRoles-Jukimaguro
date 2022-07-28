@@ -423,7 +423,7 @@ namespace SuperNewRoles.EndGame
         }
 
         public static void Postfix()
-    { 
+        {
             if (AmongUsClient.Instance.AmHost && ModeHandler.IsMode(ModeId.SuperHostRoles, ModeId.Zombie))
             {
                 PlayerControl.GameOptions = SyncSetting.OptionData.DeepCopy();
@@ -633,7 +633,15 @@ namespace SuperNewRoles.EndGame
                     if (Arsonist.IsArsonistWinFlag())
                     {
                         SuperNewRolesPlugin.Logger.LogInfo("アーソニストがEndGame");
+                        foreach (PlayerControl AllPlayer in CachedPlayer.AllPlayers)
+                        {
+                            if (AllPlayer != PlayerControl.LocalPlayer)
+                            {
+                                PlayerControl.LocalPlayer.RpcMurderPlayer(AllPlayer);
+                            }
+                        }
                         WinningPlayerData wpd = new(player.Data);
+
                         TempData.winners.Add(wpd);
                     }
                 }
@@ -769,7 +777,7 @@ namespace SuperNewRoles.EndGame
             foreach (PlayerControl p in RoleClass.SuicidalIdeation.SuicidalIdeationPlayer)
             {
                 var (playerCompleted, playerTotal) = TaskCount.TaskDate(p.Data);
-                if (p.IsAlive() && playerTotal > playerCompleted) 
+                if (p.IsAlive() && playerTotal > playerCompleted)
                 {
                     TempData.winners.Add(new WinningPlayerData(p.Data));
                 }
