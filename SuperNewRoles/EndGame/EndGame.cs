@@ -663,7 +663,7 @@ namespace SuperNewRoles.EndGame
                 AdditionalTempData.winCondition = WinCondition.SuicidalIdeationWin;
             }
 
-            if (TempData.winners.GetFastEnumerator().ToArray().Any(x => x.IsImpostor))
+            if (TempData.winners.ToArray().Any(x => x.IsImpostor))
             {
                 foreach (var cp in CachedPlayer.AllPlayers)
                 {
