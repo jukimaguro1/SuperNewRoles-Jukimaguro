@@ -5,6 +5,7 @@ using System.Linq;
 using HarmonyLib;
 using SuperNewRoles.CustomOption;
 using UnityEngine;
+using SuperNewRoles.Roles;
 
 namespace SuperNewRoles.Patch
 {
@@ -214,10 +215,29 @@ namespace SuperNewRoles.Patch
             {
                 if (HudManager.Instance.Chat.IsOpen && overlayShown)
                     HideInfoOverlay();
-                if (Input.GetKeyDown(KeyCode.H) && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
+                if (Input.GetKeyDown(KeyCode.H) && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started && RoleClass.IsMeeting)
                 {
                     YoggleInfoOverlay();
                 }
+                if (Input.GetKeyDown(KeyCode.Tab) && overlayShown || ConsoleJoystick.player.GetButtonDown(7) && overlayShown)
+                {
+                    SuperNewRolesPlugin.optionsPage = (SuperNewRolesPlugin.optionsPage + 1) % 7; ;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowNormalMap))]
+        class DisableOpenMapPatch
+        {
+            public static bool Prefix(MapBehaviour __instance)
+            {
+                if (overlayShown && !__instance.IsOpen)
+                {
+                    __instance.Close();
+                    DestroyableSingleton<HudManager>.Instance.ShowMap((Il2CppSystem.Action<MapBehaviour>)((m) => { m.Close(); }));
+                    return false;
+                }
+                return true;
             }
         }
     }
